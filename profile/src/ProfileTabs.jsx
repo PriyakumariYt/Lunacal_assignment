@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 
 const ProfileTabs = () => {
   const [activeTab, setActiveTab] = useState("about");
@@ -6,16 +6,30 @@ const ProfileTabs = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const imagesPerPage = 3;
 
+  // Retrieve images from localStorage when the component mounts
+  useEffect(() => {
+    const storedImages = localStorage.getItem("uploadedImages");
+    if (storedImages) {
+      setImages(JSON.parse(storedImages));
+    }
+  }, []);
+
   // Handle Tab Switching
   const switchTab = (tab) => {
     setActiveTab(tab);
   };
 
-  // Handle Image Upload
+  // Handle Image Upload and save to localStorage
   const handleImageUpload = (event) => {
     const uploadedFiles = Array.from(event.target.files);
     const imageUrls = uploadedFiles.map((file) => URL.createObjectURL(file));
-    setImages((prevImages) => [...prevImages, ...imageUrls]);
+
+    // Add new images and update state
+    const updatedImages = [...images, ...imageUrls];
+    setImages(updatedImages);
+
+    // Save updated images to localStorage
+    localStorage.setItem("uploadedImages", JSON.stringify(updatedImages));
   };
 
   // Calculate the index of the first and last image to display on the current page
@@ -171,4 +185,3 @@ const ProfileTabs = () => {
 };
 
 export default ProfileTabs;
-
